@@ -48,3 +48,8 @@ class Unit(models.Model):
 
     def __str__(self):
         return self.unit_heading
+
+
+class UnitImage(models.Model):
+    unit = models.ForeignKey(Unit, related_name='images', on_delete=models.CASCADE, blank=True)
+    image = models.ImageField(upload_to="media", blank=True)
