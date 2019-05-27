@@ -80,3 +80,4 @@ class UserProfileSerializer(serializers.ModelSerializer):
                                                              avatar=validated_data.pop('avatar'))
         profile.save()
         return profile
+
