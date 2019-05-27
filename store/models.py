@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django_jalali.db import models as jmodels
+
 
 
 # Create your models here.
@@ -35,7 +37,7 @@ class Unit(models.Model):
     number_of_bedroom = models.IntegerField(default=0, blank=True)
     number_of_bathroom = models.IntegerField(default=0, blank=True)
     number_of_balcony = models.IntegerField(default=0, blank=True)
-    date_of_posting = models.DateField(verbose_name="تاریخ انتشار")
+    date_of_posting = jmodels.jDateField(blank=True, null=True, verbose_name="تاریخ انتشار")
     posted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
     is_active = models.BooleanField(default=True)
     unit_description = models.CharField(max_length=500, blank=True)
