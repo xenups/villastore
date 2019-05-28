@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers, validators, exceptions
 
-from store.models import UserProfile
+from store.models import UserProfile, Unit, UnitImage, UnitType
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -56,7 +56,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('user', 'bio','avatar')
+        fields = ('user', 'bio', 'avatar')
 
     def update(self, instance, validated_data):
         user = validated_data.get('user')
@@ -81,3 +81,24 @@ class UserProfileSerializer(serializers.ModelSerializer):
         profile.save()
         return profile
 
+
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UnitImage
+        fields = ('image',)
+
+
+class UnitTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UnitType
+        fields = '__all__'
+
+
+class UnitSerializer(serializers.ModelSerializer):
+    images = ImageSerializer(many=True, read_only=True)
+    unit_type = UnitTypeSerializer(many=True)
+    posted_by = UserProfile()
+
+    class Meta:
+        model = Unit
+        fields = '__all__'
