@@ -97,7 +97,7 @@ class UnitTypeSerializer(serializers.ModelSerializer):
 class UnitSerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=True, read_only=True)
     unit_type = UnitTypeSerializer(many=True)
-    posted_by = UserProfile()
+    posted_by = UserProfileSerializer()
 
     class Meta:
         model = Unit
