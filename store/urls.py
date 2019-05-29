@@ -7,5 +7,6 @@ urlpatterns = [
     path('usersProfile/<int:pk>/', views.UserProfileDetail.as_view()),
 
     path('units/', views.UnitsList.as_view()),
+    path('units/<int:pk>/', views.UnitsDetail.as_view()),
 
 ]

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
-from rest_framework import serializers, validators, exceptions
+from rest_framework import serializers, exceptions
+import django.contrib.auth.password_validation as validators
 
 from store.models import UserProfile, Unit, UnitImage, UnitType
 
@@ -76,8 +77,21 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user_data = validated_data.pop('user')
         user = UserSerializer.create(UserSerializer(), validated_data=user_data)
-        profile, created = UserProfile.objects.get_or_create(user=user, bio=validated_data.pop('bio'),
-                                                             avatar=validated_data.pop('avatar'))
+
+        profile = UserProfile.objects.create(**validated_data)
+        profile.bio = validated_data["bio"]
+        profile.user = user
+
+        images_data = self.context.get('view').request.FILES.get("avatar")
+        print(images_data.values())
+        for image in images_data.values():
+            profile.avatar = image
+            print(image)
+
+        # user = UserSerializer.create(UserSerializer(), validated_data=user_data)
+        # profile, created = UserProfile.objects.get_or_create(user=user, bio=validated_data.pop('bio'),
+        #                           avatar=validated_data.pop('avatar'),avatar=images_data.values)
+
         profile.save()
         return profile
 
@@ -102,3 +116,30 @@ class UnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Unit
         fields = '__all__'
+
+    def create(self, validated_data):
+        postedby_data = validated_data.pop('posted_by')
+        unitType_data = validated_data.pop('unit_type')
+
+        unit = Unit.objects.create(**validated_data)
+        postedby, created = UserProfile.objects.get_or_create(name=postedby_data['name'])
+        unitType, created = UnitType.objects.get_or_create(unit_type=unitType_data['unit_type'])
+        unit.posted_by = postedby
+        unit.unit_type = unitType
+        unit.save()
+        unit.unit_heading = validated_data['unit_heading']
+        unit.carpet_area = validated_data['carpet_area']
+        unit.date_of_posting = validated_data['date_of_posting']
+        unit.has_carpet = validated_data['has_carpet']
+        unit.is_active = validated_data['is_active']
+        unit.is_airconitioned = validated_data['is_airconitioned']
+        unit.is_centeral_fan_cooling = validated_data['is_centeral_fan_cooling']
+        unit.num_of_assigned_car_parking = validated_data['num_of_assigned_car_parking']
+        unit.number_of_balcony = validated_data['number_of_balcony']
+        unit.number_of_bathroom = validated_data['number_of_bathroom']
+        unit.number_of_bedroom = validated_data['number_of_bedroom']
+        unit.unit_description = validated_data['unit_description']
+        unit.unit_floor_number = validated_data['unit_floor_number']
+        unit.unit_heading = validated_data['unit_heading']
+        unit.save()
+        return unit
