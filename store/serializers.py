@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers, exceptions
 import django.contrib.auth.password_validation as validators
 
-from store.models import UserProfile, Unit, UnitImage, UnitType
+from store.models import UserProfile, Unit, UnitImage, UnitType, ProfileImage, UserType
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -52,48 +52,41 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class ProfileImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProfileImage
+        fields = ('image',)
+
+
+class UserTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserType
+        fields = ('user_type',)
+
+
+class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
     user = UserSerializer()
+    user_type = UserTypeSerializer()
+    images = ProfileImageSerializer(source='profileimage_set', many=True, read_only=True)
 
     class Meta:
         model = UserProfile
-        fields = ('user', 'bio', 'avatar')
-
-    def update(self, instance, validated_data):
-        user = validated_data.get('user')
-        instance.user.first_name = user.get('first_name')
-        instance.user.last_name = user.get('last_name')
-        instance.user.set_password(user.get('password'))
-        instance.user.email = user.get('email')
-        # every instances entity must be saved before return
-        instance.user.save()
-        bio = validated_data.pop('bio')
-        avatar = validated_data.pop('avatar')
-        instance.avatar = avatar
-        instance.bio = bio
-        instance.save()
-        return instance
+        fields = ('id', 'bio', 'user', 'images', 'user_type')
 
     def create(self, validated_data):
+        usertype = validated_data.pop('user_type')
+        type = UserTypeSerializer.create(UserTypeSerializer(), validated_data=usertype)
+
         user_data = validated_data.pop('user')
         user = UserSerializer.create(UserSerializer(), validated_data=user_data)
 
-        profile = UserProfile.objects.create(**validated_data)
-        profile.bio = validated_data["bio"]
-        profile.user = user
+        userprofile = UserProfile.objects.create(user=user, bio=validated_data.pop('bio'), user_type=type)
+        images_data = self.context.get('view').request.FILES
+        for image_data in images_data.values():
+            ProfileImage.objects.create(userprofile=userprofile, image=image_data, user_type=type)
 
-        images_data = self.context.get('view').request.FILES.get("avatar")
-        print(images_data.values())
-        for image in images_data.values():
-            profile.avatar = image
-            print(image)
-
-        # user = UserSerializer.create(UserSerializer(), validated_data=user_data)
-        # profile, created = UserProfile.objects.get_or_create(user=user, bio=validated_data.pop('bio'),
-        #                           avatar=validated_data.pop('avatar'),avatar=images_data.values)
-
-        profile.save()
-        return profile
+        userprofile.save()
+        return userprofile
 
 
 class ImageSerializer(serializers.ModelSerializer):

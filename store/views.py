@@ -1,10 +1,12 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
+from rest_framework.utils import json
 from rest_framework_simplejwt.state import User
 
 from store.models import UserProfile, Unit
-from store.serializers import UserProfileSerializer, UserSerializer, UnitSerializer
+from store.serializers import UserProfileSerializer, UserSerializer, UnitSerializer, ProfileImageSerializer
 
 
 # Create your views here.
@@ -24,6 +26,6 @@ class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserProfileSerializer
 
 
-class UserProfileList(generics.ListCreateAPIView):
-    queryset = UserProfile.objects.all()
+class UserProfileViewSet(generics.ListCreateAPIView):
     serializer_class = UserProfileSerializer
+    queryset = UserProfile.objects.all()
