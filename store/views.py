@@ -1,10 +1,11 @@
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 from rest_framework import generics, status
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework.request import Request
 
-
-from store.models import UserProfile, Unit, UnitImage ,ProfileImage
+from store.models import UserProfile, Unit, UnitImage, ProfileImage
 from store.serializers import UserProfileSerializer, UserSerializer, UnitSerializer, ProfileImageSerializer, \
     UnitImageSerializer
 
@@ -20,6 +21,9 @@ class UnitsList(generics.ListCreateAPIView):
     parser_classes = (JSONParser, MultiPartParser, FormParser,)
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
+    search_fields = ('unit_floor_number',)
+    filterset_fields = ('unit_heading', 'number_of_balcony', 'unit_floor_number',)
 
 
 class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
