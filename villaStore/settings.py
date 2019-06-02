@@ -128,6 +128,11 @@ MEDIA_URL = '/media/'
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1000000), }
 REST_FRAMEWORK = {
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+    ),
+
     # 'DEFAULT_AUTHENTICATION_CLASSES':
     #     ['rest_framework_simplejwt.authentication.JWTAuthentication', ],
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',

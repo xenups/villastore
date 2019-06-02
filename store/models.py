@@ -12,8 +12,9 @@ class UserType(models.Model):
 
 
 class UserProfile(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # user = models.OneToOneField(User, primary_key=True, related_name='profile', on_delete=True)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    user = models.OneToOneField(User, primary_key=True, related_name='profile', on_delete=True)
     user_type = models.ForeignKey(UserType, on_delete=models.CASCADE)
     bio = models.CharField(max_length=50, blank=False)
 
@@ -44,13 +45,13 @@ class UnitType(models.Model):
 
 class Unit(models.Model):
     unit_heading = models.CharField(max_length=50, blank=True)
-    unit_type = models.ManyToManyField(UnitType, blank=True, null=True, verbose_name="نوع خانه")
+    unit_type = models.ForeignKey(UnitType, blank=True, null=True,on_delete=models.CASCADE, verbose_name="نوع خانه")
     number_of_bedroom = models.IntegerField(default=0, blank=True)
     number_of_bathroom = models.IntegerField(default=0, blank=True)
     number_of_balcony = models.IntegerField(default=0, blank=True)
     date_of_posting = jmodels.jDateField(blank=True, null=True, verbose_name="تاریخ انتشار")
-    posted_by = models.ForeignKey(UserProfile, on_delete=models.CASCADE, blank=False,
-                                  null=False)
+    posted_by = models.ForeignKey(UserProfile, on_delete=models.CASCADE, blank=True,
+                                  null=True)
     is_active = models.BooleanField(default=True)
     unit_description = models.CharField(max_length=500, blank=True)
     carpet_area = models.IntegerField(default=0, blank=True)

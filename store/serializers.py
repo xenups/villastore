@@ -71,7 +71,7 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('id', 'bio', 'user', 'images', 'user_type')
+        fields = ('bio', 'user', 'images', 'user_type')
 
     def create(self, validated_data):
         usertype = validated_data.pop('user_type')
@@ -82,6 +82,7 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
 
         userprofile = UserProfile.objects.create(user=user, bio=validated_data.pop('bio'), user_type=type)
         images_data = self.context.get('view').request.FILES
+
         for image_data in images_data.values():
             ProfileImage.objects.create(userprofile=userprofile, image=image_data, user_type=type)
 
@@ -102,21 +103,39 @@ class UnitTypeSerializer(serializers.ModelSerializer):
 
 
 class UnitSerializer(serializers.ModelSerializer):
-    images = ImageSerializer(many=True, read_only=True)
-    unit_type = UnitTypeSerializer(many=True)
+    # images = ImageSerializer(many=True, read_only=True)
+    # unitType = serializers.RelatedField(source="unit_type", read_only=True)
+    unit_type = UnitTypeSerializer()
     posted_by = UserProfileSerializer()
+
+    def to_internal_value(self, data):
+        # when object received here changed to the object view
+        # it changed the nested object to flat
+        # just work while using post
+        self.fields['posted_by'] = serializers.PrimaryKeyRelatedField(
+            queryset=UserProfile.objects.all())
+
+        self.fields['unit_type'] = serializers.PrimaryKeyRelatedField(
+            queryset=UnitType.objects.all())
+
+        return super(UnitSerializer, self).to_internal_value(data)
 
     class Meta:
         model = Unit
-        fields = '__all__'
+        # fields = '__all__'
+        fields = ('id', 'unit_heading', 'unit_type', 'posted_by', 'carpet_area',
+                  'date_of_posting', 'has_carpet', 'is_active', 'is_airconitioned', 'is_centeral_fan_cooling',
+                  'num_of_assigned_car_parking', 'number_of_balcony', 'number_of_bathroom', 'number_of_bedroom',
+                  'unit_description', 'unit_floor_number')
 
     def create(self, validated_data):
         postedby_data = validated_data.pop('posted_by')
         unitType_data = validated_data.pop('unit_type')
 
         unit = Unit.objects.create(**validated_data)
-        postedby, created = UserProfile.objects.get_or_create(name=postedby_data['name'])
-        unitType, created = UnitType.objects.get_or_create(unit_type=unitType_data['unit_type'])
+        postedby, created = UserProfile.objects.get_or_create(pk=postedby_data.pk)
+        unitType, created = UnitType.objects.get_or_create(pk=unitType_data.pk)
+
         unit.posted_by = postedby
         unit.unit_type = unitType
         unit.save()
@@ -133,6 +152,5 @@ class UnitSerializer(serializers.ModelSerializer):
         unit.number_of_bedroom = validated_data['number_of_bedroom']
         unit.unit_description = validated_data['unit_description']
         unit.unit_floor_number = validated_data['unit_floor_number']
-        unit.unit_heading = validated_data['unit_heading']
         unit.save()
         return unit
