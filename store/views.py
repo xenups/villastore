@@ -7,8 +7,9 @@ from rest_framework.response import Response
 from rest_framework.utils import json
 from rest_framework_simplejwt.state import User
 
-from store.models import UserProfile, Unit
-from store.serializers import UserProfileSerializer, UserSerializer, UnitSerializer, ProfileImageSerializer
+from store.models import UserProfile, Unit , UnitImage
+from store.serializers import UserProfileSerializer, UserSerializer, UnitSerializer, ProfileImageSerializer, \
+    UnitImageSerializer
 
 
 # Create your views here.
@@ -39,3 +40,9 @@ class UserProfileViewSet(generics.ListCreateAPIView):
     parser_classes = (JSONParser, MultiPartParser, FormParser,)
     serializer_class = UserProfileSerializer
     queryset = UserProfile.objects.all()
+
+
+class ImagesUnitViewSet(generics.ListCreateAPIView):
+    parser_classes = (JSONParser, MultiPartParser, FormParser,)
+    serializer_class = UnitImageSerializer
+    queryset = UnitImage.objects.all()

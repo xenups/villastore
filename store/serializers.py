@@ -90,21 +90,28 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
         return userprofile
 
 
-class ImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UnitImage
-        fields = ('image',)
-
-
 class UnitTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = UnitType
         fields = '__all__'
 
 
+class UnitImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UnitImage
+        fields = ('image', 'unit',)
+
+        def create(self, validated_data):
+            unit_data = validated_data.pop('unit')
+            unit = UnitSerializer.create(UnitSerializer(), validated_data=unit_data)
+            images_data = self.context.get('view').request.FILES
+            for image_data in images_data.values():
+                UnitImage.objects.create(image=image_data, pk=unit_data.pk)
+            return UnitImage
+
+
 class UnitSerializer(serializers.ModelSerializer):
-    # images = ImageSerializer(many=True, read_only=True)
-    # unitType = serializers.RelatedField(source="unit_type", read_only=True)
+    images = UnitImageSerializer(many=True, read_only=True)
     unit_type = UnitTypeSerializer()
     posted_by = UserProfileSerializer()
 
@@ -126,7 +133,7 @@ class UnitSerializer(serializers.ModelSerializer):
         fields = ('id', 'unit_heading', 'unit_type', 'posted_by', 'carpet_area',
                   'date_of_posting', 'has_carpet', 'is_active', 'is_airconitioned', 'is_centeral_fan_cooling',
                   'num_of_assigned_car_parking', 'number_of_balcony', 'number_of_bathroom', 'number_of_bedroom',
-                  'unit_description', 'unit_floor_number')
+                  'unit_description', 'unit_floor_number', 'images')
 
     def create(self, validated_data):
         postedby_data = validated_data.pop('posted_by')
