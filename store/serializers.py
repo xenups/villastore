@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'first_name', 'last_name', 'email')
+        fields = ('id', 'username', 'password', 'first_name', 'last_name', 'email')
 
     def validate(self, data):
         # here data has all the fields which have validated values
@@ -55,7 +55,15 @@ class UserSerializer(serializers.ModelSerializer):
 class ProfileImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProfileImage
-        fields = ('image',)
+        fields = ('image', 'userprofile')
+
+        def create(self, validated_data):
+            userprofile_data = validated_data.pop('userprofile')
+            userimage = ProfileImageSerializer.create(ProfileImageSerializer(), validated_data=userprofile_data)
+            images_data = self.context.get('view').request.FILES
+            for image_data in images_data.values():
+                ProfileImage.objects.create(image=image_data, pk=userprofile_data.pk)
+            return ProfileImage
 
 
 class UserTypeSerializer(serializers.ModelSerializer):
@@ -69,22 +77,27 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
     user_type = UserTypeSerializer()
     images = ProfileImageSerializer(source='profileimage_set', many=True, read_only=True)
 
+    def to_internal_value(self, data):
+        # when object received here changed to the object view
+        # it changed the nested object to flat
+        # just work while using post
+        self.fields['user_type'] = serializers.PrimaryKeyRelatedField(
+            queryset=UserType.objects.all())
+        return super(UserProfileSerializer, self).to_internal_value(data)
+
     class Meta:
         model = UserProfile
         fields = ('bio', 'user', 'images', 'user_type')
 
     def create(self, validated_data):
-        usertype = validated_data.pop('user_type')
-        type = UserTypeSerializer.create(UserTypeSerializer(), validated_data=usertype)
+        userType_data = validated_data.pop('user_type')
+        userType, created = UserType.objects.get_or_create(pk=userType_data.pk)
 
         user_data = validated_data.pop('user')
         user = UserSerializer.create(UserSerializer(), validated_data=user_data)
 
-        userprofile = UserProfile.objects.create(user=user, bio=validated_data.pop('bio'), user_type=type)
+        userprofile = UserProfile.objects.create(user=user, bio=validated_data.pop('bio'), user_type=userType)
         images_data = self.context.get('view').request.FILES
-
-        for image_data in images_data.values():
-            ProfileImage.objects.create(userprofile=userprofile, image=image_data, user_type=type)
 
         userprofile.save()
         return userprofile

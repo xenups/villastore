@@ -9,6 +9,7 @@ urlpatterns = [
     path('units/', views.UnitsList.as_view()),
     path('units/<int:pk>/', views.UnitsDetail.as_view()),
 
-    path('upload/', views.ImagesUnitViewSet.as_view()),
+    path('uploadUnitImage/', views.ImagesUnitViewSet.as_view()),
+    path('uploadProfileImage/', views.ProfileImageViewSet.as_view()),
 
 ]

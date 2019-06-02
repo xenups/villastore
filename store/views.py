@@ -1,13 +1,10 @@
-from django.http import HttpResponse
-from django.shortcuts import render
+
 from rest_framework import generics, status
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework.request import Request
-from rest_framework.response import Response
-from rest_framework.utils import json
-from rest_framework_simplejwt.state import User
 
-from store.models import UserProfile, Unit , UnitImage
+
+from store.models import UserProfile, Unit, UnitImage ,ProfileImage
 from store.serializers import UserProfileSerializer, UserSerializer, UnitSerializer, ProfileImageSerializer, \
     UnitImageSerializer
 
@@ -46,3 +43,9 @@ class ImagesUnitViewSet(generics.ListCreateAPIView):
     parser_classes = (JSONParser, MultiPartParser, FormParser,)
     serializer_class = UnitImageSerializer
     queryset = UnitImage.objects.all()
+
+
+class ProfileImageViewSet(generics.ListCreateAPIView):
+    parser_classes = (JSONParser, MultiPartParser, FormParser,)
+    serializer_class = ProfileImageSerializer
+    queryset = ProfileImage.objects.all()
