@@ -13,6 +13,7 @@ from store.serializers import UserProfileSerializer, UserSerializer, UnitSeriali
 # Create your views here.
 
 class UnitsDetail(generics.RetrieveUpdateDestroyAPIView):
+    parser_classes = (JSONParser, MultiPartParser, FormParser,)
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
 
@@ -27,6 +28,7 @@ class UnitsList(generics.ListCreateAPIView):
 
 
 class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+    parser_classes = (JSONParser, MultiPartParser, FormParser,)
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
 
