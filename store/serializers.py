@@ -127,10 +127,28 @@ class UnitImageSerializer(serializers.ModelSerializer):
         model = UnitImage
         fields = ('image', 'unit',)
 
+        def validate(self, data):
+            # get the password from the data
+            password = data.get('password')
+
+            errors = dict()
+            try:
+                # validate the password and catch the exception
+                validators.validate_password(password=password, user=User)
+
+            # the exception raised here is different than serializers.ValidationError
+            except exceptions.ValidationError as e:
+                errors['password'] = list(e.messages)
+
+            if errors:
+                raise serializers.ValidationError(errors)
+
+            return super(UserSerializer, self).validate(data)
+
         def create(self, validated_data):
             unit_data = validated_data.pop('unit')
             unit = UnitSerializer.create(UnitSerializer(), validated_data=unit_data)
-            images_data = self.context.get('view').request.FILES
+            images_data = self.context.get('view').request.FILESz
             for image_data in images_data.values():
                 UnitImage.objects.create(image=image_data, pk=unit_data.pk)
             return UnitImage

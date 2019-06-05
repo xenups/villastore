@@ -2,8 +2,10 @@ from django.contrib.auth.models import User
 from django.db import models
 from django_jalali.db import models as jmodels
 
-
 # Create your models here.
+from store.validators import validate_file_size
+
+
 class UserType(models.Model):
     user_type = models.CharField(max_length=20, blank=True)
 
@@ -65,4 +67,4 @@ class Unit(models.Model):
 
 class UnitImage(models.Model):
     unit = models.ForeignKey(Unit, related_name='images', on_delete=models.CASCADE, blank=True)
-    image = models.ImageField(upload_to="media", blank=True)
+    image = models.ImageField(upload_to="media", blank=True, validators=[validate_file_size])
