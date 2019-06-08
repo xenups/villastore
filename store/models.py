@@ -78,4 +78,4 @@ class UnitImage(models.Model):
             super(UnitImage, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.unit
+        return self.unit.unit_heading
