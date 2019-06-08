@@ -3,6 +3,8 @@ from django.db import models
 from django_jalali.db import models as jmodels
 
 # Create your models here.
+from rest_framework.exceptions import ValidationError
+
 from store.validators import validate_file_size
 
 
@@ -68,3 +70,12 @@ class Unit(models.Model):
 class UnitImage(models.Model):
     unit = models.ForeignKey(Unit, related_name='images', on_delete=models.CASCADE, blank=True)
     image = models.ImageField(upload_to="media", blank=True, validators=[validate_file_size])
+
+    def save(self, *args, **kwargs):
+        if UnitImage.objects.filter(unit=self.unit).count() >= 5:
+            raise ValidationError("Can only create 4 images ")
+        else:
+            super(UnitImage, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.unit
