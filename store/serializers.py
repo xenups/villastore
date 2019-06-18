@@ -194,15 +194,19 @@ class UnitSerializer(serializers.ModelSerializer, ):
         postedby_data = validated_data.pop('posted_by')
         unitType_data = validated_data.pop('unit_type')
         location_data = validated_data.pop('location')
-        # print(location_data)
 
         unit = Unit.objects.create(**validated_data)
         postedby, created = UserProfile.objects.get_or_create(pk=postedby_data.pk)
         unitType, created = UnitType.objects.get_or_create(pk=unitType_data.pk)
 
+        location = LocationSerializer.create(LocationSerializer(), validated_data=location_data)
+        # locationD,created = Location.objects.get_or_create(location_data)
+        # locationD.city = 'hiii'
+
+        # unit.location = locationD
         unit.posted_by = postedby
+        unit.location = location
         unit.unit_type = unitType
-        # unit.location = area
         unit.save()
         unit.unit_heading = validated_data['unit_heading']
         unit.carpet_area = validated_data['carpet_area']
