@@ -47,9 +47,6 @@ class UnitType(models.Model):
 
 
 class Location(models.Model):
-    """
-    A model which holds information about a particular location
-    """
     address = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=100, blank=True)

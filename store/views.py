@@ -8,9 +8,9 @@ from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework.request import Request
 from django.contrib.gis.db.models.functions import Distance
 
-from store.models import UserProfile, Unit, UnitImage, ProfileImage
+from store.models import UserProfile, Unit, UnitImage, ProfileImage, Location
 from store.serializers import UserProfileSerializer, UserSerializer, UnitSerializer, ProfileImageSerializer, \
-    UnitImageSerializer
+    UnitImageSerializer, LocationSerializer
 
 
 # Create your views here.
@@ -19,6 +19,12 @@ class UnitsDetail(generics.RetrieveUpdateDestroyAPIView):
     parser_classes = (JSONParser, MultiPartParser, FormParser,)
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
+
+
+class LocationList(generics.ListCreateAPIView):
+    parser_classes = (JSONParser, MultiPartParser, FormParser,)
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializer
 
 
 class UnitsList(generics.ListCreateAPIView):
@@ -30,7 +36,7 @@ class UnitsList(generics.ListCreateAPIView):
     # search_fields = ('number_of_balcony',)
     filter_fields = (
         'unit_heading', 'number_of_balcony', 'unit_floor_number', 'carpet_area', 'is_active',
-        'unit_type','posted_by',)
+        'unit_type', 'posted_by',)
 
 
 class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):

@@ -165,10 +165,9 @@ class LocationSerializer(GeoFeatureModelSerializer):
 
 class UnitSerializer(serializers.ModelSerializer, ):
     images = UnitImageSerializer(many=True, read_only=True)
-    location = LocationSerializer(many=True, read_only=True)
+    location = LocationSerializer()
     unit_type = UnitTypeSerializer()
     posted_by = UserProfileSerializer()
-
 
     def to_internal_value(self, data):
         # when object received here changed to the object view
@@ -201,20 +200,11 @@ class UnitSerializer(serializers.ModelSerializer, ):
         postedby, created = UserProfile.objects.get_or_create(pk=postedby_data.pk)
         unitType, created = UnitType.objects.get_or_create(pk=unitType_data.pk)
 
-        st_location = LocationSerializer(data=validated_data.get('location', None))
-        if st_location.is_valid(raise_exception=False):
-            area = st_location.save()
-            validated_data['location'] = area
-
-        location_data = validated_data.pop('location')
-        res = self.Meta.model.objects.create(**validated_data)
-
         unit.posted_by = postedby
         unit.unit_type = unitType
-        unit.location.set(res.location)
+        # unit.location = area
         unit.save()
         unit.unit_heading = validated_data['unit_heading']
-        unit.location = validated_data['location']
         unit.carpet_area = validated_data['carpet_area']
         unit.date_of_posting = validated_data['date_of_posting']
         unit.has_carpet = validated_data['has_carpet']
