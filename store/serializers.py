@@ -1,8 +1,10 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers, exceptions
 import django.contrib.auth.password_validation as validators
+from drf_extra_fields.geo_fields import PointField
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
-from store.models import UserProfile, Unit, UnitImage, UnitType, ProfileImage, UserType
+from store.models import UserProfile, Unit, UnitImage, UnitType, ProfileImage, UserType, Location
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -154,10 +156,19 @@ class UnitImageSerializer(serializers.ModelSerializer):
             return UnitImage
 
 
-class UnitSerializer(serializers.ModelSerializer):
+class LocationSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = Location
+        fields = ('id', 'address', 'city', 'state',)
+        geo_field = 'point'
+
+
+class UnitSerializer(serializers.ModelSerializer, ):
     images = UnitImageSerializer(many=True, read_only=True)
+    location = LocationSerializer(many=True, read_only=True)
     unit_type = UnitTypeSerializer()
     posted_by = UserProfileSerializer()
+
 
     def to_internal_value(self, data):
         # when object received here changed to the object view
@@ -174,24 +185,36 @@ class UnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Unit
         # fields = '__all__'
-        fields = ('id', 'unit_heading', 'unit_type', 'posted_by', 'carpet_area',
+        fields = ('id', 'location', 'unit_heading', 'unit_type', 'posted_by', 'carpet_area',
                   'date_of_posting', 'has_carpet', 'is_active', 'is_airconitioned', 'is_centeral_fan_cooling',
                   'num_of_assigned_car_parking', 'number_of_balcony', 'number_of_bathroom', 'number_of_bedroom',
-                  'unit_description', 'unit_floor_number', 'images')
+                  'unit_description', 'unit_floor_number', 'images',)
 
     def create(self, validated_data):
         print("create called")
         postedby_data = validated_data.pop('posted_by')
         unitType_data = validated_data.pop('unit_type')
+        location_data = validated_data.pop('location')
+        # print(location_data)
 
         unit = Unit.objects.create(**validated_data)
         postedby, created = UserProfile.objects.get_or_create(pk=postedby_data.pk)
         unitType, created = UnitType.objects.get_or_create(pk=unitType_data.pk)
 
+        st_location = LocationSerializer(data=validated_data.get('location', None))
+        if st_location.is_valid(raise_exception=False):
+            area = st_location.save()
+            validated_data['location'] = area
+
+        location_data = validated_data.pop('location')
+        res = self.Meta.model.objects.create(**validated_data)
+
         unit.posted_by = postedby
         unit.unit_type = unitType
+        unit.location.set(res.location)
         unit.save()
         unit.unit_heading = validated_data['unit_heading']
+        unit.location = validated_data['location']
         unit.carpet_area = validated_data['carpet_area']
         unit.date_of_posting = validated_data['date_of_posting']
         unit.has_carpet = validated_data['has_carpet']

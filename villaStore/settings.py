@@ -38,9 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.gis',
     'django.contrib.staticfiles',
     'store.apps.StoreConfig',
     'rest_framework',
+    'rest_framework_gis',
     'django_extensions',
 ]
 CACHES = {
@@ -49,7 +51,9 @@ CACHES = {
         "LOCATION": "redis://127.0.0.1:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+            "CONNECTION_POOL_KWARGS": {"max_connections": 100, "retry_on_timeout": True},
+
+        },
     }
 }
 MIDDLEWARE = [
@@ -87,9 +91,20 @@ WSGI_APPLICATION = 'villaStore.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.contrib.gis.db.backends.postgis',
+#         'NAME': 'gis',
+#         'USER': 'user001',
+#         'PASSWORD': '123456789',
+#         'HOST': 'localhost',
+#         'PORT': '5432'
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'villastore',
         'USER': 'xenups',
     }

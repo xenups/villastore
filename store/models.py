@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.contrib.gis.db import models
 from django_jalali.db import models as jmodels
 
 # Create your models here.
@@ -45,8 +46,19 @@ class UnitType(models.Model):
         return self.unit_type
 
 
+class Location(models.Model):
+    """
+    A model which holds information about a particular location
+    """
+    address = models.CharField(max_length=255, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=100, blank=True)
+    point = models.PointField()
+
+
 class Unit(models.Model):
     unit_heading = models.CharField(max_length=50, blank=True)
+    location = models.ForeignKey(Location, blank=True, null=True, on_delete=models.CASCADE, verbose_name="address")
     unit_type = models.ForeignKey(UnitType, blank=True, null=True, on_delete=models.CASCADE, verbose_name="نوع خانه")
     number_of_bedroom = models.IntegerField(default=0, blank=True)
     number_of_bathroom = models.IntegerField(default=0, blank=True)

@@ -1,9 +1,12 @@
+import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from django.contrib.gis.geos import Point
 
 from rest_framework import generics, status
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework.request import Request
+from django.contrib.gis.db.models.functions import Distance
 
 from store.models import UserProfile, Unit, UnitImage, ProfileImage
 from store.serializers import UserProfileSerializer, UserSerializer, UnitSerializer, ProfileImageSerializer, \
@@ -22,9 +25,12 @@ class UnitsList(generics.ListCreateAPIView):
     parser_classes = (JSONParser, MultiPartParser, FormParser,)
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
-    search_fields = ('unit_floor_number',)
-    filterset_fields = ('unit_heading', 'number_of_balcony', 'unit_floor_number',)
+    # filter_backends = (filters.SearchFilter,)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    # search_fields = ('number_of_balcony',)
+    filter_fields = (
+        'unit_heading', 'number_of_balcony', 'unit_floor_number', 'carpet_area', 'is_active',
+        'unit_type','posted_by',)
 
 
 class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):

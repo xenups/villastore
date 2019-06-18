@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django_jalali.admin import JDateFieldListFilter
 
-from store.models import UserProfile, Unit, UnitType, UserType, UnitImage, ProfileImage
+from store.models import UserProfile, Unit, UnitType, UserType, UnitImage, ProfileImage, Location
 
 
 class UnitImageInline(admin.TabularInline):
@@ -25,10 +25,11 @@ class UserProfileAdmin(admin.ModelAdmin):
 class UnitAdmin(admin.ModelAdmin):
     inlines = [UnitImageInline, ]
     list_filter = (
-        ('date_of_posting', JDateFieldListFilter),)
+        ('date_of_posting', JDateFieldListFilter),'location')
 
 
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(UserType)
 admin.site.register(Unit, UnitAdmin)
 admin.site.register(UnitType)
+admin.site.register(Location)
