@@ -3,6 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from django.contrib.gis.geos import Point
 
+from rest_framework_gis.filters import DistanceToPointFilter, InBBoxFilter
 from rest_framework import generics, status
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework.request import Request
@@ -26,17 +27,25 @@ class LocationList(generics.ListCreateAPIView):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
 
+    bbox_filter_field = 'point'
+    bbox_filter_include_overlapping = True
+    filter_backends = ( InBBoxFilter,)
+    filter_fields = ('city', 'address',)
+
 
 class UnitsList(generics.ListCreateAPIView):
     parser_classes = (JSONParser, MultiPartParser, FormParser,)
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
     # filter_backends = (filters.SearchFilter,)
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    # http://127.0.0.1:8000/api/units/?in_bbox=48.47,36.92,49.95,37.56 find locations that exist in rasht
+    bbox_filter_field = 'location__point'
+    bbox_filter_include_overlapping = True
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,  InBBoxFilter,)
     # search_fields = ('number_of_balcony',)
     filter_fields = (
         'unit_heading', 'number_of_balcony', 'unit_floor_number', 'carpet_area', 'is_active',
-        'unit_type', 'posted_by',)
+        'unit_type', 'posted_by','location__city','location__address',)
 
 
 class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
