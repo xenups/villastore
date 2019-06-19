@@ -23,13 +23,14 @@ class UnitsDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class LocationList(generics.ListCreateAPIView):
+    # this is an instance of distance to location
+    # http://127.0.0.1:8000/api/location/?dist=4000&point=-122.4862,37.7694
     parser_classes = (JSONParser, MultiPartParser, FormParser,)
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
-
-    bbox_filter_field = 'point'
+    distance_filter_field = 'point'
+    filter_backends = (DistanceToPointFilter,)
     bbox_filter_include_overlapping = True
-    filter_backends = ( InBBoxFilter,)
     filter_fields = ('city', 'address',)
 
 
@@ -41,11 +42,11 @@ class UnitsList(generics.ListCreateAPIView):
     # http://127.0.0.1:8000/api/units/?in_bbox=48.47,36.92,49.95,37.56 find locations that exist in rasht
     bbox_filter_field = 'location__point'
     bbox_filter_include_overlapping = True
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,  InBBoxFilter,)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend, InBBoxFilter,)
     # search_fields = ('number_of_balcony',)
     filter_fields = (
         'unit_heading', 'number_of_balcony', 'unit_floor_number', 'carpet_area', 'is_active',
-        'unit_type', 'posted_by','location__city','location__address',)
+        'unit_type', 'posted_by', 'location__city', 'location__address',)
 
 
 class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
