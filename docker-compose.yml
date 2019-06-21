@@ -3,9 +3,16 @@ version: '3'
 services:
   db:
     image:  kartoza/postgis
+    environment:
+      - POSTGRES_DB=gis
+      - POSTGRES_USER=user001
+      - POSTGRES_PASSWORD=123456789
+    ports:
+      - "5432"
+
   web:
     build: .
-    command: python manage.py runserver
+    command: python manage.py runserver  0.0.0.0:8000
     container_name: villastore
     volumes:
       - .:/villastore
@@ -13,3 +20,5 @@ services:
       - "8000:8000"
     depends_on:
       - db
+volumes:
+  postgres_data:

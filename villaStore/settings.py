@@ -26,7 +26,7 @@ SECRET_KEY = 'wue0jjw-5b)!m41^jv*zs2^$o81dph!0)8*xc($1+1hxe4p$8w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 # Application definition
 
@@ -97,7 +97,7 @@ DATABASES = {
         'NAME': 'gis',
         'USER': 'user001',
         'PASSWORD': '123456789',
-        'HOST': 'localhost',
+        'HOST': 'db',# set in docker-compose.yml
         'PORT': '5432'
     }
 }

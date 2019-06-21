@@ -12,6 +12,10 @@ FROM python:3.7
 
 
 # create root directory for our project in the container
+# Set environment varibles
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
 RUN mkdir /villastore
 RUN apt-get update &&\
     apt-get install -y binutils libproj-dev gdal-bin
