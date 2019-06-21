@@ -1,15 +1,15 @@
 version: '3'
 
 services:
+  db:
+    image:  kartoza/postgis
   web:
     build: .
-    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: python manage.py runserver
     container_name: villastore
     volumes:
       - .:/villastore
     ports:
       - "8000:8000"
-
-  db:
-    image: kartoza/postgis
-
+    depends_on:
+      - db

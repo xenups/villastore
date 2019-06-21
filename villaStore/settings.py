@@ -26,7 +26,7 @@ SECRET_KEY = 'wue0jjw-5b)!m41^jv*zs2^$o81dph!0)8*xc($1+1hxe4p$8w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0']
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -91,24 +91,27 @@ WSGI_APPLICATION = 'villaStore.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'gis',
+        'USER': 'user001',
+        'PASSWORD': '123456789',
+        'HOST': 'localhost',
+        'PORT': '5432'
+    }
+}
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.contrib.gis.db.backends.postgis',
 #         'NAME': 'gis',
 #         'USER': 'user001',
 #         'PASSWORD': '123456789',
-#         'HOST': 'localhost',
-#         'PORT': '5432'
+#
+#         'HOST': 'localhost',  # set in docker-compose.yml
 #     }
 # }
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'villastore',
-        'USER': 'xenups',
-    }
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
