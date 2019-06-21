@@ -1,6 +1,11 @@
 version: '3'
 
 services:
+  redis:
+    restart: always
+    image: redis
+    expose:
+      - "6379"
   db:
     image:  kartoza/postgis
     environment:
@@ -20,5 +25,7 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - redis
+
 volumes:
   postgres_data:
