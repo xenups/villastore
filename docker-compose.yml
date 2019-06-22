@@ -17,7 +17,9 @@ services:
 
   web:
     build: .
-    command: python manage.py runserver  0.0.0.0:8000
+    #    connect gunicorn to wsgi replace the python manage.py runserver 0.0.0.0:8000
+    command: bash -c "python3 manage.py collectstatic --no-input && python3 manage.py migrate && gunicorn --timeout=30 --workers=2 --bind :8000 villaStore.wsgi:application"
+
     container_name: villastore
     volumes:
       - .:/villastore
@@ -26,6 +28,14 @@ services:
     depends_on:
       - db
       - redis
+  nginx:
+    image: nginx:latest
+    ports:
+      - "3000:8000"
+    volumes:
+      - ./config/nginx:/etc/nginx/conf.d
+    depends_on:
+      - web
 
 volumes:
   postgres_data:
