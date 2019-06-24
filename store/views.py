@@ -8,7 +8,7 @@ from rest_framework import generics, status
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework.request import Request
 from django.contrib.gis.db.models.functions import Distance
-
+from .permissions import *
 from store.models import UserProfile, Unit, UnitImage, ProfileImage, Location
 from store.serializers import UserProfileSerializer, UserSerializer, UnitSerializer, ProfileImageSerializer, \
     UnitImageSerializer, LocationSerializer
@@ -36,6 +36,7 @@ class LocationList(generics.ListCreateAPIView):
 
 class UnitsList(generics.ListCreateAPIView):
     parser_classes = (JSONParser, MultiPartParser, FormParser,)
+    permission_classes = (IsAuthenticated,)
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
     # filter_backends = (filters.SearchFilter,)

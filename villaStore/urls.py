@@ -15,6 +15,7 @@ Including another URLconf
 """
 import os
 
+from django.conf.urls import url
 from django.conf.urls.static import static
 
 from django.contrib import admin
@@ -26,12 +27,11 @@ from rest_framework_simplejwt.views import (
 )
 from villaStore import settings
 
-urlpatterns = [path(r'^api/token/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-               path(r'^api/token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
+urlpatterns = [url(r'^api/token/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+               url(r'^api/token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
                path('admin/', admin.site.urls),
                path('api/', include('store.urls')), ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-

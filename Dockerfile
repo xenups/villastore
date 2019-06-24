@@ -5,10 +5,6 @@ FROM python:3.7
 
 # The enviroment variable ensures that the python output is set straight
 # to the terminal with out buffering it first
-#ENV PYTHONUNBUFFERED 1
-#ENV POSTGRES_USER=user001
-#ENV POSTGRES_PASS=123456789
-#ENV POSTGRES_DBNAME=gis
 
 
 # create root directory for our project in the container

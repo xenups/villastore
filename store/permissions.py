@@ -10,7 +10,7 @@ class IsLoggedInUserOrAdmin(permissions.BasePermission):
 
 class IsAuthenticatedNotPost(IsAuthenticated):
     def has_permission(self, request, view):
-        if request.method == 'DELETE':
+        if request.method == 'POST':
             return False
         return super(IsAuthenticatedNotPost, self).has_permission(request, view)
 
