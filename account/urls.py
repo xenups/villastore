@@ -8,4 +8,5 @@ urlpatterns = [
     path('usersProfile/<int:pk>/', views.UserProfileDetail.as_view()),
     path('uploadProfileImage/', cache_page(60 * 60)(views.ProfileImageViewSet.as_view())),
 
+
 ]
