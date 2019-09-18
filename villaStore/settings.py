@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'django.contrib.staticfiles',
     'store.apps.StoreConfig',
+    'account.apps.AccountConfig',
     'rest_framework',
     'rest_framework_gis',
     'django_extensions',

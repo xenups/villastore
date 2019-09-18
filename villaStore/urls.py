@@ -30,7 +30,9 @@ from villaStore import settings
 urlpatterns = [url(r'^api/token/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
                url(r'^api/token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
                path('admin/', admin.site.urls),
-               path('api/', include('store.urls')), ]
+               path('api/', include('store.urls')),
+               path('account/', include('account.urls'))
+               ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
