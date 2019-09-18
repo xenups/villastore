@@ -8,12 +8,13 @@ services:
       - "6379"
   db:
     image:  kartoza/postgis
+    restart: always
     environment:
       - POSTGRES_DB=gis
       - POSTGRES_USER=user001
       - POSTGRES_PASSWORD=123456789
     ports:
-      - "5432"
+      - "5432:5432"
 
   web:
     build: .

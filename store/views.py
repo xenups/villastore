@@ -1,13 +1,10 @@
 import django_filters
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
-from django.contrib.gis.geos import Point
+from rest_framework.permissions import AllowAny
 
 from rest_framework_gis.filters import DistanceToPointFilter, InBBoxFilter
 from rest_framework import generics, status
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework.request import Request
-from django.contrib.gis.db.models.functions import Distance
 from .permissions import *
 from store.models import UserProfile, Unit, UnitImage, ProfileImage, Location
 from store.serializers import UserProfileSerializer, UserSerializer, UnitSerializer, ProfileImageSerializer, \
@@ -17,6 +14,7 @@ from store.serializers import UserProfileSerializer, UserSerializer, UnitSeriali
 # Create your views here.
 
 class UnitsDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
     parser_classes = (JSONParser, MultiPartParser, FormParser,)
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
@@ -35,8 +33,8 @@ class LocationList(generics.ListCreateAPIView):
 
 
 class UnitsList(generics.ListCreateAPIView):
+    permission_classes = (AllowAny,)
     parser_classes = (JSONParser, MultiPartParser, FormParser,)
-    permission_classes = (IsAuthenticated,)
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
     # filter_backends = (filters.SearchFilter,)
@@ -51,6 +49,7 @@ class UnitsList(generics.ListCreateAPIView):
 
 
 class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
     parser_classes = (JSONParser, MultiPartParser, FormParser,)
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
