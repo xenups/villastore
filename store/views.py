@@ -4,14 +4,10 @@ from rest_framework.permissions import AllowAny
 from rest_framework_gis.filters import DistanceToPointFilter, InBBoxFilter
 from rest_framework import generics, status
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
-from rest_framework.request import Request
 from .permissions import *
-from store.models import UserProfile, Unit, UnitImage, ProfileImage, Location
-from store.serializers import UserProfileSerializer, UserSerializer, UnitSerializer, ProfileImageSerializer, \
-    UnitImageSerializer, LocationSerializer
+from store.models import Unit, UnitImage, Location
+from store.serializers import UnitSerializer, UnitImageSerializer, LocationSerializer
 
-
-# Create your views here.
 
 class UnitsDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,)
@@ -48,32 +44,7 @@ class UnitsList(generics.ListCreateAPIView):
         'unit_type', 'posted_by', 'location__city', 'location__address',)
 
 
-class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated,)
-    parser_classes = (JSONParser, MultiPartParser, FormParser,)
-    queryset = UserProfile.objects.all()
-    serializer_class = UserProfileSerializer
-
-
-class UserProfileViewSet(generics.ListCreateAPIView):
-
-    def initialize_request(self, request, *args, **kwargs):
-        if not isinstance(request, Request):
-            request = super().initialize_request(request, *args, **kwargs)
-        return request
-
-    parser_classes = (JSONParser, MultiPartParser, FormParser,)
-    serializer_class = UserProfileSerializer
-    queryset = UserProfile.objects.all()
-
-
 class ImagesUnitViewSet(generics.ListCreateAPIView):
     parser_classes = (JSONParser, MultiPartParser, FormParser,)
     serializer_class = UnitImageSerializer
     queryset = UnitImage.objects.all()
-
-
-class ProfileImageViewSet(generics.ListCreateAPIView):
-    parser_classes = (JSONParser, MultiPartParser, FormParser,)
-    serializer_class = ProfileImageSerializer
-    queryset = ProfileImage.objects.all()
