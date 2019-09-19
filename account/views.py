@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 from rest_framework.request import Request
-from rest_framework import generics
+from rest_framework import generics, permissions
 from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 from rest_framework.permissions import IsAuthenticated
 
@@ -23,6 +23,9 @@ class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UserProfileViewSet(generics.ListCreateAPIView):
+    permission_classes = [
+        permissions.AllowAny  # Or anon users can't register
+    ]
 
     def initialize_request(self, request, *args, **kwargs):
         if not isinstance(request, Request):
@@ -32,4 +35,3 @@ class UserProfileViewSet(generics.ListCreateAPIView):
     parser_classes = (JSONParser, MultiPartParser, FormParser,)
     serializer_class = UserProfileSerializer
     queryset = UserProfile.objects.all()
-

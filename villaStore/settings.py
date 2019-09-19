@@ -44,8 +44,10 @@ INSTALLED_APPS = [
     'store.apps.StoreConfig',
     'account.apps.AccountConfig',
     'rest_framework',
+    'rest_registration',
     'rest_framework_gis',
     'django_extensions',
+
 ]
 CACHES = {
     "default": {
@@ -171,4 +173,11 @@ REST_FRAMEWORK = {
         ['rest_framework_simplejwt.authentication.JWTAuthentication', ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
+}
+REST_REGISTRATION = {
+    'REGISTER_VERIFICATION_URL': 'https://frontend-host/verify-user/',
+    'RESET_PASSWORD_VERIFICATION_URL': 'https://frontend-host/reset-password/',
+    'REGISTER_EMAIL_VERIFICATION_URL': 'https://frontend-host/verify-email/',
+
+    'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
 }
