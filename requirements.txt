@@ -7,7 +7,7 @@ django-jalali==3.1.0
 django-location-field==2.1.0
 django-redis==4.10.0
 django-redis-cache==2.0.0
-djangorestframework==3.9.4
+djangorestframework==3.11.2
 djangorestframework-gis==0.14
 djangorestframework-simplejwt==4.3.0
 gunicorn==19.9.0
